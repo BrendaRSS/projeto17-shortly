@@ -1,4 +1,5 @@
 import { connection } from "../database/database.js";
+import {v4 as uuidV4} from "uuid";
 
 export async function postSignUp(req, res){
     const bodyUser = res.locals.bodyUserHashPassword;
@@ -15,6 +16,12 @@ export async function postSignUp(req, res){
    
 }
 
-// export async function postSignIn(req, res){
-
-// }
+export async function postSignIn(req, res){
+    const userExist = req.userExist;
+    // const token = uuidV4();
+    
+    delete userExist.rows[0].password
+    delete userExist.rows[0].confirmPassword
+    console.log(userExist.rows[0]);
+    return res.sendStatus(200);
+}
