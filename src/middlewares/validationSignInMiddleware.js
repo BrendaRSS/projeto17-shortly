@@ -22,7 +22,7 @@ export async function validationSignIn(req, res, next){
             return res.sendStatus(401);
         }
 
-        req.userExist = userExist;
+        req.userExist = userExist.rows[0];
         next();
     }catch(err){
         console.log(err);

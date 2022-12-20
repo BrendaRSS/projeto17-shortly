@@ -18,10 +18,20 @@ export async function postSignUp(req, res){
 
 export async function postSignIn(req, res){
     const userExist = req.userExist;
-    // const token = uuidV4();
-    
-    delete userExist.rows[0].password
-    delete userExist.rows[0].confirmPassword
-    console.log(userExist.rows[0]);
-    return res.sendStatus(200);
+    const token = uuidV4();
+
+    console.log(userExist);
+    console.log(token);
+
+    try{
+        await connection.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`,
+        [token, userExist.id]);
+   
+        delete userExist.password
+        delete userExist.confirmPassword
+        return res.status(200).send({token, userExist});
+    }catch(error){
+        console.log(error);
+        return res.sendStatus(500);
+    }
 }
