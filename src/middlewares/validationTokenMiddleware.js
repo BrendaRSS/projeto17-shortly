@@ -22,7 +22,7 @@ export async function validationToken(req, res, next){
             const userToken = await connection.query(`SELECT * FROM users WHERE id = $1`,
             [decoded.id]);
             if(userToken.rows.length===0){
-                return res.sendStatus(401);
+                return res.sendStatus(404);
             }
     
             res.locals.userToken = userToken.rows[0];

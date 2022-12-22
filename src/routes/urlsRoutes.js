@@ -1,5 +1,10 @@
 import { Router } from "express";
-import {postUrl, getUrlsId, urlOpenShort, deleteUrlsId} from "../controllers/urlsControllers.js"
+import {
+    postUrl, 
+    getUrlsId, 
+    urlOpenShort, 
+    deleteUrlsId
+} from "../controllers/urlsControllers.js"
 import {validationToken} from "../middlewares/validationTokenMiddleware.js";
 import {validationUrls} from "../middlewares/validationUrlsMiddleware.js";
 
