@@ -61,3 +61,31 @@ export async function urlOpenShort(req, res){
         return res.sendStatus(500);
     }
 }
+
+export async function deleteUrlsId(req, res){
+    const userToken = res.locals.userToken;
+    const {id} =  req.params;
+
+    try{
+        const urlExist = await connection.query(`SELECT * FROM urls WHERE id = $1`,
+        [id]);
+        if(urlExist.rows.length===0){
+            return res.status(404).send("url inexistente!");
+        }
+        
+        const pertenceUser = await connection.query(`SELECT * FROM urls_and_users WHERE "urlId" = $1`,
+        [urlExist.rows[0].id]);
+        
+        if(pertenceUser.rows[0].userId!==userToken.id){
+            return res.sendStatus(401);
+        }
+
+        await connection.query(`DELETE FROM urls_and_users WHERE "urlId" = $1`, [urlExist.rows[0].id]);
+        await connection.query(`DELETE FROM urls WHERE id = $1`, [id]);
+       
+        return res.sendStatus(204);
+    }catch(error){
+        console.log(error);
+        return res.sendStatus(500);
+    }
+}
