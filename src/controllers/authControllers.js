@@ -1,9 +1,11 @@
 import { connection } from "../database/database.js";
-import {v4 as uuidV4} from "uuid";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function postSignUp(req, res){
     const bodyUser = res.locals.bodyUserHashPassword;
-    console.log(bodyUser);
+    // console.log(bodyUser);
 
     try{
         await connection.query(`INSERT INTO users (name, email, password, "confirmPassword") VALUES ($1, $2, $3, $4)`,
@@ -18,14 +20,9 @@ export async function postSignUp(req, res){
 
 export async function postSignIn(req, res){
     const userExist = req.userExist;
-    const token = uuidV4();
-
-    console.log(userExist);
-    console.log(token);
 
     try{
-        await connection.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`,
-        [token, userExist.id]);
+        const token = jwt.sign({id: userExist.id}, process.env.SECRET_JWT, {expiresIn: 86400});
    
         delete userExist.password
         delete userExist.confirmPassword

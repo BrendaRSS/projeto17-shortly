@@ -11,3 +11,7 @@ export const loginSchema = joi.object({
     email: joi.string().email().required(),
     password: joi.string().min(4).required()
 })
+
+export const urlSchema = joi.object({
+    url: joi.string().uri().required()
+})
