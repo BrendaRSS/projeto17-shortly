@@ -56,7 +56,7 @@ export async function getRanking(req, res){
 
         return res.status(200).send(rankingNotNull);
     }catch(error){
-
+        console.log(error);
+        return res.sendStatus(500);
     }
-    return res.send("entrou na rota")
 }
