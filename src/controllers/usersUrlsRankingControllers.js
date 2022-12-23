@@ -4,11 +4,11 @@ export async function urlsUser(req, res){
     const userToken = res.locals.userToken;
 
     try{
-       const urlsUserId = await connection.query(`SELECT users.id, users.name, SUM(urls."visitCount") AS "visitCount" 
-       FROM users 
-        JOIN urls_and_users 
+       const urlsUserId = await connection.query(`SELECT users.id, users.name, SUM(COALESCE(urls."visitCount", 0)) AS "visitCount" 
+        FROM users 
+        LEFT JOIN urls_and_users 
             ON users.id = urls_and_users."userId" 
-        JOIN urls 
+        LEFT JOIN urls 
             ON urls.id = urls_and_users."urlId" 
         WHERE users.id = $1 
         GROUP BY users.id 
@@ -16,7 +16,7 @@ export async function urlsUser(req, res){
         [userToken.id]);
 
         const urlsAllUser = await connection.query(`SELECT urls.* FROM urls 
-        JOIN urls_and_users 
+        LEFT JOIN urls_and_users 
             ON urls.id = urls_and_users."urlId" 
         WHERE urls_and_users."userId" = $1`,
         [userToken.id]);
@@ -33,14 +33,15 @@ export async function urlsUser(req, res){
 export async function getRanking(req, res){
 
     try{
-       const ranking = await connection.query(`SELECT users.id, users.name, COUNT(urls.id) AS "linksCount", SUM(urls."visitCount") AS "visitCount" 
-        FROM users 
-        LEFT JOIN urls_and_users 
-            ON users.id = urls_and_users."userId" 
-        LEFT JOIN urls 
-            ON urls.id = urls_and_users."urlId" 
-        GROUP BY users.id
-        ORDER BY "visitCount" DESC LIMIT 10;`);
+       const ranking = await connection.query(`SELECT users.id, users.name, COUNT(urls.id) AS "linksCount", SUM(COALESCE(urls."visitCount", 0)) AS "visitCount" 
+        FROM users  
+        LEFT JOIN urls_and_users  
+            ON users.id = urls_and_users."userId"  
+        LEFT JOIN urls   
+            ON urls.id = urls_and_users."urlId"  
+        GROUP BY users.id 
+        ORDER BY "visitCount" DESC 
+        LIMIT 10;`);
 
         const rankingNotNull = [];
         for(let i=0; i<ranking.rows.length; i++){
